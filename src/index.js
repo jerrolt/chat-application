@@ -5,7 +5,7 @@ const socketio = require('socket.io')
 const Filter = require('bad-words')
 
 const { generateMessage, generateLocationMessage } = require('./utils/messages')
-const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users')
+const { addUser, removeUser, getUser, getUsersInRoom, getAllRooms } = require('./utils/users')
 
 const app = express()
 const server = http.createServer(app)
@@ -22,6 +22,17 @@ app.get('', (req, res) => {
 
 
 io.on('connection', (socket) => {
+
+
+    // Listener - signup
+    socket.on('signup', () => {
+        const rooms = getAllRooms() //create method for this in src/utils/users.js
+        //console.log(rooms)
+        socket.emit('roomlist', rooms)
+    })
+
+
+
     // Listener - User Joins/Creates a Room
     socket.on('join', (options, callback) => {
         const { error, user } = addUser({ id: socket.id, ...options })
